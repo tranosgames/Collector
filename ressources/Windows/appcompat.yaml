@@ -1,0 +1,38 @@
+metadata: 
+  name: "AppCompat"
+  description: "AppCompat files"
+  date: "29/03/2024"
+  category: "Windows"
+artefact:
+  group: 
+    - 'Amcache'
+    - 'RecentFileCache'
+
+---
+
+metadata: 
+  name: "Amcache"
+  description: "Amcache hive files"
+  date: "29/03/2024"
+  category: "Windows"
+  source: 
+    - "https://artifacts-kb.readthedocs.io/en/latest/sources/windows/AMCache.html"
+artefact:
+  path: 
+    - '\Windows\AppCompat\Programs\Amcache.hve'
+    - '\Windows\appcompat\Programs\Amcache.hve.Log1'
+    - '\Windows\appcompat\Programs\Amcache.hve.Log2'
+
+---
+
+metadata: 
+  name: "RecentFileCache"
+  description: "RecentFileCache files can be found on windows 7 system"
+  date: "29/03/2024"
+  category: "Windows"
+  source: 
+    - "https://artifacts-kb.readthedocs.io/en/latest/sources/windows/RecentFileCache.html"
+artefact:
+  path: 
+    - '\Windows\AppCompat\Programs\RecentFileCache.bcf'
+    - '\Windows\appcompat\Programs\RecentFileCache.bcf'

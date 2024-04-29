@@ -1,0 +1,12 @@
+metadata: 
+  name: "ScheduledTasks"
+  description: "Scheduled tasks is a service on windows to execute some tasks. It can be used for persistant attack."
+  date: "04/04/2024"
+  category: "Windows"
+  source:
+    - "https://forensics.wiki/windows/#scheduled-tasks"
+    - "https://forensafe.com/blogs/taskschd.html"
+    - "https://www.crowdstrike.com/blog/crowdresponse-release-new-tasks-modules/"
+artefact:
+  path: 
+    - '\Windows\System32\Tasks\**\*'

@@ -1,0 +1,35 @@
+metadata: 
+  name: "JumpLists"
+  description: "JumpLists files"
+  date: "29/03/2024"
+  category: "Windows"
+artefact:
+  group: 
+    - 'AutomaticDestinations'
+    - 'RecentFileAccess'
+
+---
+metadata: 
+  name: "AutomaticDestinations"
+  description: "Automatic Destinations and Custom Destinations file"
+  date: "29/03/2024"
+  category: "Windows"
+  source: 
+    - "https://artifacts-kb.readthedocs.io/en/latest/sources/windows/JumpLists.html"
+artefact:
+  path: 
+    - '\Users\*\AppData\Roaming\Microsoft\Windows\Recent\AutomaticDestinations\*.automaticDestinations-ms'
+    - '\Users\*\AppData\Roaming\Microsoft\Windows\Recent\CustomDestinations\*.customDestinations-ms'
+
+---
+metadata: 
+  name: "RecentFileAccess"
+  description: "Recent File Access file"
+  date: "29/03/2024"
+  category: "Windows"
+  source: 
+    - "https://belkasoft.com/forensic-analysis-of-lnk-files"
+    - "https://forensafe.com/blogs/lnkfile.html"
+artefact:
+  path: 
+    - '\Users\*\AppData\Roaming\Microsoft\Windows\Recent\*'

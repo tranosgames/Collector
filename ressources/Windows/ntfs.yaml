@@ -1,0 +1,29 @@
+metadata: 
+  name: "NTFS"
+  description: "Group ntfs"
+  date: "06/04/2024"
+  category: "Windows"
+artefact:
+  group: 
+    - 'MFT'
+    - 'RecycleBin'
+---
+
+metadata: 
+  name: "MFT"
+  description: "MFT table"
+  date: "02/03/2024"
+  category: "Windows"
+artefact:
+  path: 
+    - '\$MFT'
+---
+
+metadata: 
+  name: "RecycleBin"
+  description: "Recycle bin"
+  date: "04/04/2024"
+  category: "Windows"
+artefact:
+  path: 
+    - '\$Recycle.Bin\**\*'

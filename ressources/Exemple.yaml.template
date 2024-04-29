@@ -1,0 +1,9 @@
+metadata: 
+  name: "NameOfYourArtifactRessource"
+  description: "This is a description of my artefact"
+  date: "29/03/2024"
+  source:
+    - "https://exemple.com/exemple-of-collector-ressources"
+artefact:
+  path: 
+    - 'exemple\of\path\to\artefact.atf'

@@ -1,0 +1,12 @@
+metadata: 
+  name: "WindowsDefender"
+  description: "Extract windows defender log"
+  date: "02/03/2024"
+  category: "AntiVirus"
+  source:
+    - "https://github.com/jklepsercyber/defender-detectionhistory-parser"
+    - "https://www.crowdstrike.com/blog/how-to-use-microsoft-protection-logging-for-forensic-investigations/"
+artefact:
+  path: 
+    - '\ProgramData\Microsoft\Windows Defender\Scans\History\Service\DetectionHistory\**\*'
+    - '\ProgramData\Microsoft\Windows Defender\Support\*'

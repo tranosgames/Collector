@@ -1,0 +1,22 @@
+metadata: 
+  name: "WindowsSystem"
+  description: "This is regroup all windows system artefact"
+  date: "29/03/2024"
+  category: "Collection"
+artefact:
+  group:
+    - "NTFS"
+    - "Prefetch"
+    - "ActivitiesCache"
+    - "Registry"
+    - "AppCompat"
+    - "EventLog"
+    - "JumpLists"
+    - "EseDB"
+    - "IExplorer"
+    - "WindowsSearch"
+    - "ThumbCache"
+    - "RDPBMC"
+    - "PSReadLine"
+    - "ScheduledTasks"
+    - "StartupProgram"

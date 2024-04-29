@@ -1,0 +1,15 @@
+metadata: 
+  name: "EseDB"
+  description: "Extensible Storage Engine (ESE) Database File Knowledge Base"
+  date: "02/03/2024"
+  category: "Windows"
+  source:
+    - "https://esedb-kb.readthedocs.io/en/latest/"
+    - "https://artifacts-kb.readthedocs.io/en/latest/sources/windows/SystemResourceUsageMonitor.html"
+    - "https://github.com/libyal/esedb-kb/tree/main/documentation"
+artefact:
+  path: 
+    - '\ntds\NTDS.DIT'
+    - '\Windows\System32\sru\SRUDB.dat'
+    - '\User\*\AppData\Local\Microsoft\Windows Mail\WindowsMail.MSMessageStore'
+    - '\Windows\SoftwareDistribution\DataStore\DataStore.edb'

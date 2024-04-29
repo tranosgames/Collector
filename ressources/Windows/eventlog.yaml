@@ -1,0 +1,10 @@
+metadata: 
+  name: "EventLog"
+  description: "Windows event log"
+  date: "29/03/2024"
+  category: "Windows"
+  source: 
+    - "https://artifacts-kb.readthedocs.io/en/latest/sources/windows/EventLog.html"
+artefact:
+  path: 
+    - '\Windows\System32\winevt\Logs\*.evtx'

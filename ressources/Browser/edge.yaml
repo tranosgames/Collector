@@ -1,0 +1,17 @@
+metadata: 
+  name: "Edge"
+  description: "Edge files"
+  date: "29/03/2024"
+  category: "Browser"
+  source: 
+    - "https://nasbench.medium.com/web-browsers-forensics-7e99940c579a"
+    - "https://book.hacktricks.xyz/generic-methodologies-and-resources/basic-forensic-methodology/specific-software-file-type-tricks/browser-artifacts#google-chrome"
+artefact:
+  path: 
+    - '\Users\*\AppData\Local\Microsoft\Edge\User Data\Default\History'
+    - '\Users\*\AppData\Local\Microsoft\Edge\User Data\Default\Extension Cookies'
+    - '\Users\*\AppData\Local\Microsoft\Edge\User Data\Default\Bookmarks'
+    - '\Users\*\AppData\Local\Microsoft\Edge\User Data\Default\Login Data'
+    - '\Users\*\AppData\Local\Microsoft\Edge\User Data\Default\Extensions\**\*'
+    - '\Users\*\AppData\Local\Microsoft\Edge\User Data\Default\Cache\Cache_Data\*'
+    - '\Users\*\AppData\Local\Microsoft\Edge\User Data\Default\Sessions\*'

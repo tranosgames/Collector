@@ -1,0 +1,26 @@
+metadata: 
+  name: "Registry"
+  description: "Registry files"
+  date: "16/03/2024"
+  category: "Windows"
+  source: 
+    - "https://artifacts-kb.readthedocs.io/en/latest/sources/windows/RegistryFiles.html"
+artefact:
+  path: 
+    - '\Windows\System32\config\SAM'
+    - '\Windows\System32\config\SAM.LOG1'
+    - '\Windows\System32\config\SAM.LOG2'
+    - '\Windows\System32\config\SECURITY'
+    - '\Windows\System32\config\SECURITY.LOG1'
+    - '\Windows\System32\config\SECURITY.LOG2'
+    - '\Windows\System32\config\SOFTWARE'
+    - '\Windows\System32\config\SOFTWARE.LOG1'
+    - '\Windows\System32\config\SOFTWARE.LOG2'
+    - '\Windows\System32\config\SYSTEM'
+    - '\Windows\System32\config\SYSTEM.LOG1'
+    - '\Windows\System32\config\SYSTEM.LOG2'
+    - '\Windows\System32\config\DEFAULT'
+    - '\Windows\System32\config\DEFAULT.LOG1'
+    - '\Windows\System32\config\DEFAULT.LOG2'
+    - '\Users\*\NTUSER.DAT'
+    - '\Users\*\AppData\Local\Microsoft\Windows\NTUSER.DAT'

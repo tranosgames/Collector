@@ -1,0 +1,11 @@
+metadata: 
+  name: "All"
+  description: "group of all artefacts"
+  date: "29/03/2024"
+  category: "Collection"
+artefact:
+  group:
+    - "Antivirus"
+    - "Apps"
+    - "Browsers"
+    - "WindowsSystem"

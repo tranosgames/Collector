@@ -1,0 +1,22 @@
+[workspace]
+members = ["collector_cli","collector_engine", "collector_gui"]
+resolver = "2"
+
+[workspace.package]
+version = "0.2.0"
+edition = "2021"
+authors = ["Tranos"]
+description = "This tool was an artefact collector fast and secure. It can collect low level files."
+repository = "https://github.com/tranosgames/Collector_Binary"
+keywords = ["artefact","dfir","forensics","rust"]
+
+[profile.dev]
+opt-level = 0
+debug = true
+codegen-units = 256
+
+[profile.release]
+opt-level = 3
+debug = false
+codegen-units = 16
+

@@ -1,0 +1,13 @@
+metadata: 
+  name: "Splashtop"
+  description: "Splashtop is a remote access control. It can be use to have a persistant access."
+  date: "03/03/2024"
+  category: "App_Remote_Access"
+  source:
+    - "https://www.synacktiv.com/publications/legitimate-rats-a-comprehensive-forensic-analysis-of-the-usual-suspects"
+artefact:
+  path: 
+    - '\ProgramData\Splashtop\Splashtop Remote Server\Credential\*'
+    - '\ProgramData\Splashtop\Temp\log\FTCLog.txt'
+    - '\Program Files (x86)\Splashtop\Splashtop Remote\Server\log\agent_log.txt'
+    - '\Program Files (x86)\Splashtop\Splashtop Remote\Server\log\SPLog.txt'

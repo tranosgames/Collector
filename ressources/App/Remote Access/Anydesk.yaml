@@ -1,0 +1,17 @@
+metadata: 
+  name: "Anydesk"
+  description: "Anydesk is a remote access control. It can be use to have a persistant access."
+  date: "03/03/2024"
+  category: "App_Remote_Access"
+  source:
+    - "https://www.synacktiv.com/publications/legitimate-rats-a-comprehensive-forensic-analysis-of-the-usual-suspects"
+artefact:
+  path: 
+    - '\ProgramData\AnyDesk\connection_trace.txt'
+    - '\ProgramData\AnyDesk\ad_svc.trace'
+    - '\ProgramData\AnyDesk\service.conf'
+    - '\ProgramData\AnyDesk\system.conf'
+    - '\Users\*\AppData\Roaming\AnyDesk\ad.trace'
+    - '\Users\*\AppData\Roaming\AnyDesk\chat\*.txt'
+    - '\Users\*\AppData\Roaming\AnyDesk\user.conf'
+    - '\Users\*\AppData\Roaming\AnyDesk\system.conf'

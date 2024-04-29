@@ -1,0 +1,11 @@
+metadata: 
+  name: "Firefox"
+  description: "Firefox files"
+  date: "29/03/2024"
+  category: "Browser"
+  source: 
+    - "https://nasbench.medium.com/web-browsers-forensics-7e99940c579a"
+    - "https://book.hacktricks.xyz/generic-methodologies-and-resources/basic-forensic-methodology/specific-software-file-type-tricks/browser-artifacts#google-chrome"
+artefact:
+  path: 
+    - ''
