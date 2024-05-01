@@ -2,7 +2,7 @@
 // use list_parse::ArtefactListing;
 use collector_engine::collect::Collect;
 use collector_engine::parser::{YamlParser, YamlArtefact};
-use collector_engine::vss::Vss;
+use collector_engine::vss::CollectVss;
 use std::fs::File;
 use clap::Parser;
 use log::*;
@@ -124,12 +124,15 @@ async fn main(){
     // Under contruction
 
     // Start collect vss
-    // let if_vss: bool = args.vss;
-    // if if_vss{
-    //     info!("Start to collect artefact from vss");
-    //     let vss_obj = Vss::new(&dst_string,list_artefacts.clone());
-    //     vss_obj.collect().await;
-    // }
+    let if_vss: bool = args.vss;
+    if if_vss{
+        info!("Start to collect artefact from vss");
+        let vss_obj = CollectVss::new(&src_string,&dst_string,list_artefacts.clone());
+        vss_obj.collect().await;
+        // CollectVss::get_list();
+        // let res = VSSObj::get_vss_list();
+        // println!("{:?}",res);
+    }
 
     // zip if need
     match zip_name{

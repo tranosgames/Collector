@@ -20,6 +20,6 @@ log = "0.4.21"
 walkdir = "2.5.0"
 zip = "0.6.6"
 filetime = "0.2.23"
-winapi = { version = "0.3.9", features = ["vsbackup", "vsserror", "winnt", "winerror", "cguid", "combaseapi", "impl-default"] }
-widestring = "0.4.3"
 serde_yml = "0.0.4"
+collector_vss = { path="../collector_vss" }
+uuid = { version = "1.8.0", features = ["fast-rng", "v4"] }

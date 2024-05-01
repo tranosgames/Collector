@@ -1,0 +1,16 @@
+[package]
+name = "collector_vss"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description.workspace = true
+repository.workspace = true
+keywords.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+winapi = { version = "0.3.9", features = ["vsbackup", "vsserror", "winnt", "winerror", "cguid", "combaseapi", "impl-default","fileapi"] }
+widestring = "0.4.3"
+anyhow = "1.0.80"
+log = "0.4.21"
