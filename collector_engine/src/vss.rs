@@ -31,16 +31,18 @@ impl CollectVss {
 		}
 	}
 
-	pub fn get_list(){
-		let _vss_engine = Vss::new("C:\\".to_string());
+	pub fn get_list(&self){
+		let vss_engine = Vss::new("C:\\".to_string());
+		let _m = vss_engine.get_list();
+		// println!("{:?}",m);
 		// println!("{:?}",vss_engine.get_all_list());
 		// vss_engine.mount_vss(&PathBuf::from("symlinkvss"));
 	}
 
 	pub async fn collect(&self){
-		let vss_list_item: Vec<VSSObj> = match self.vss_obj.get_all_list() {
+		let vss_list_item: Vec<VSSObj> = match self.vss_obj.get_list() {
 			Ok(is_list) =>   is_list,
-			Err(_get_err) => return,
+			Err(_get_err) => {println!("{:?}",_get_err );return},
 		};
 
 		// Create temporary path to store vss

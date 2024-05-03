@@ -21,7 +21,7 @@ Options:
       --zip <ZIP_NAME>
           Zip output directory
       --vss
-          Zip output directory
+          Collect from vss
       --log
           Print log output in terminal. (Little bit longer)
   -v, --verbose

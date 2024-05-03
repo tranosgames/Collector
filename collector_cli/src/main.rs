@@ -15,7 +15,7 @@ use std::time;
 #[command(version, about, long_about = None)]
 struct Args{
     /// The source of collecting artefact.
-    #[arg(short,long, default_value="C:")]
+    #[arg(short,long, default_value="C:\\")]
     source: String,
 
     /// The destination of collecting artefact. 
@@ -34,7 +34,7 @@ struct Args{
     #[arg(long="zip")]
     zip_name: Option<String>,
 
-    /// Zip output directory.
+    /// Collect from vss.
     #[arg(long)]
     vss: bool,
 
@@ -116,6 +116,7 @@ async fn main(){
     
     // Start collect
     info!("Start to collect artefact");
+    // let collector_obj = Collect::new(&src_string,&dst_string,list_artefacts.clone(),false);
     let mut collector_obj = Collect::new(&src_string,&dst_string,list_artefacts.clone(),false);
     let _collector_obj_start = collector_obj.start().await;
     info!("End to collect artefact");
@@ -125,6 +126,7 @@ async fn main(){
     if if_vss{
         info!("Start to collect artefact from VSS");
         let vss_obj = CollectVss::new(&src_string,&dst_string,list_artefacts.clone());
+        // vss_obj.get_list();
         vss_obj.collect().await;
         info!("End to collect artefact from vss");
     }

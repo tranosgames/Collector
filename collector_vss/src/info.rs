@@ -1,8 +1,10 @@
+use std::os::windows::ffi::OsStringExt;
+use std::ffi::OsString;
 use std::ptr::null_mut;
 use std::mem::zeroed;
 use log::*;
 use anyhow::{Result,anyhow};
-use widestring::U16CStr;
+use widestring::{U16CStr,encode_utf16};
 use winapi::{
 	shared::{
 		rpcdce::{
@@ -37,7 +39,7 @@ use winapi::{
 			VSS_OBJECT_SNAPSHOT,
 		},
 		winnt::HRESULT,
-		fileapi::GetVolumeInformationA
+		fileapi::GetVolumeNameForVolumeMountPointW
 	}
 };
 
@@ -230,6 +232,7 @@ impl VSSObj {
 	}
 }
 
+
 pub struct DriveLetter {
 	drive_letter: String
 }
@@ -241,13 +244,18 @@ impl DriveLetter {
 		}
 	}
 
-	pub fn to_volume(&self) -> String {
-		unsafe {
-			let mut dl_to_volume = Default::default();
-			let convert_dl_win = self.drive_letter.as_bytes().as_ptr() as *const i8;
-			let _gvia = GetVolumeInformationA(convert_dl_win, &mut dl_to_volume, 64, null_mut(), null_mut(), null_mut(), null_mut(), 0);
-			println!("{:?}",dl_to_volume);
-		};
-		"".to_string()
+	pub fn to_volume(&self) -> Option<String> {
+			
+			let mut convert_dl_win: Vec<u16> = encode_utf16(&mut self.drive_letter.chars()).collect();
+			convert_dl_win.push(0);
+			const VOLUME_MAX_LEN: usize = 50;
+			let mut buffer = [0u16; VOLUME_MAX_LEN];
+		
+			let gvnfvmpw = unsafe {GetVolumeNameForVolumeMountPointW(convert_dl_win.as_ptr(),buffer.as_mut_ptr(),50)};
+			if gvnfvmpw == 0{
+				return None
+			}else{
+				return Some(OsString::from_wide(&buffer).to_string_lossy().trim_end_matches('\0').to_string())
+			}
 	}
 }

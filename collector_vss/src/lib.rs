@@ -3,7 +3,7 @@ pub mod info;
 use crate::info::{VSSObj,DriveLetter};
 use std::path::PathBuf;
 use tokio::fs;
-use anyhow::Result;
+use anyhow::{Result,anyhow};
 
 #[derive(Debug, Clone)]
 pub struct Vss {
@@ -22,13 +22,28 @@ impl Vss {
         return VSSObj::get_list();
     }
 
-    pub  fn get_list(&self){
+    pub  fn get_list(&self) -> Result<Vec<VSSObj>,>{
+        let get_vss_list = match VSSObj::get_list() {
+            Ok(obj) => obj,
+            Err(err) => return Err(err) 
+        };
+        let get_original_volume = match self.convert(){
+            Some(origine_volume) => origine_volume,
+            None => return Err(anyhow!("[VSS] Original volume can't be found"))
+        };
+        let get_filter_list: Vec<VSSObj> = get_vss_list.iter().filter(|o| o.original_volume_name == get_original_volume).cloned().collect();
+        if get_filter_list.len() == 0{
+            Err(anyhow!("[VSS] No VSS found with this drive letter"))
+        }else{
+            Ok(get_filter_list)
+        }
 
     }
 
-    pub fn convert(&self){
+    pub fn convert(&self) -> Option<String>{
         let dl = &self.drive_letter;
-        let _dlv = DriveLetter::from(dl.to_string()).to_volume();
+        let dlv: Option<String> = DriveLetter::from(dl.to_string()).to_volume();
+        dlv
     }
 
     pub async fn mount_vss(vss_item: VSSObj ,dest_path: PathBuf) -> PathBuf {

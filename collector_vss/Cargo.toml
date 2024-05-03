@@ -12,6 +12,6 @@ keywords.workspace = true
 [dependencies]
 winapi = { version = "0.3.9", features = ["vsbackup", "vsserror", "winnt", "winerror", "cguid", "combaseapi", "impl-default","fileapi"] }
 tokio = { version="1.35.1", features = ["full"] }
-widestring = "0.4.3"
+widestring = "1.1.0"
 anyhow = "1.0.80"
 log = "0.4.21"
