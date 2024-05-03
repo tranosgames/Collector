@@ -43,7 +43,7 @@ use winapi::{
 
 
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct VSSObj {
 	pub original_volume_name: String,
 	pub device_volume_name: String,
@@ -208,7 +208,7 @@ impl VSSObj {
 							device_volume_name: str_device.to_string_lossy(),
 							timestamp: str_timestamp.to_string(),
 						};
-						info!("[VSS] VSS finded : {:?}",str_orginal.to_string_lossy());
+						info!("[VSS] VSS finded : {:?}",str_device.to_string_lossy());
 						vss_list.push(create_vss_obj);
 
 					},

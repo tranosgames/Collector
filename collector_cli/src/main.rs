@@ -116,22 +116,17 @@ async fn main(){
     
     // Start collect
     info!("Start to collect artefact");
-    let collector_obj = Collect::new(&src_string,&dst_string,list_artefacts.clone());
-    // let mut collector_obj = Collect::new(&src_string,&dst_string,list_artefacts.clone());
-    // let _collector_obj_start = collector_obj.start().await;
+    let mut collector_obj = Collect::new(&src_string,&dst_string,list_artefacts.clone(),false);
+    let _collector_obj_start = collector_obj.start().await;
     info!("End to collect artefact");
-
-    // Under contruction
 
     // Start collect vss
     let if_vss: bool = args.vss;
     if if_vss{
-        info!("Start to collect artefact from vss");
+        info!("Start to collect artefact from VSS");
         let vss_obj = CollectVss::new(&src_string,&dst_string,list_artefacts.clone());
         vss_obj.collect().await;
-        // CollectVss::get_list();
-        // let res = VSSObj::get_vss_list();
-        // println!("{:?}",res);
+        info!("End to collect artefact from vss");
     }
 
     // zip if need

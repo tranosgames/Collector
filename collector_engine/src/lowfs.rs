@@ -96,8 +96,7 @@ where
 	let entry = NtfsFileNameIndex::find(&mut finder, infofs.ntfs, &mut infofs.fs, artefact_filename);
 	let test_entry = match entry {
 		Some(entry) => entry,
-		None => return Err(anyhow!("Error on {}:",artefact_filename
-			)),
+		None => return Err(anyhow!("Error on {}:",artefact_filename)),
 	};
 	let file = test_entry.unwrap().to_file(infofs.ntfs, &mut infofs.fs)?;
 	Ok(file)
