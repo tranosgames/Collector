@@ -7,6 +7,6 @@ metadata:
     - "https://forensics.wiki/windows/#scheduled-tasks"
     - "https://forensafe.com/blogs/taskschd.html"
     - "https://www.crowdstrike.com/blog/crowdresponse-release-new-tasks-modules/"
-artefact:
+artifact:
   path: 
     - '\Windows\System32\Tasks\**\*'

@@ -3,7 +3,7 @@ metadata:
   description: "JumpLists files"
   date: "29/03/2024"
   category: "Windows"
-artefact:
+artifact:
   group: 
     - 'AutomaticDestinations'
     - 'RecentFileAccess'
@@ -16,7 +16,7 @@ metadata:
   category: "Windows"
   source: 
     - "https://artifacts-kb.readthedocs.io/en/latest/sources/windows/JumpLists.html"
-artefact:
+artifact:
   path: 
     - '\Users\*\AppData\Roaming\Microsoft\Windows\Recent\AutomaticDestinations\*.automaticDestinations-ms'
     - '\Users\*\AppData\Roaming\Microsoft\Windows\Recent\CustomDestinations\*.customDestinations-ms'
@@ -30,6 +30,6 @@ metadata:
   source: 
     - "https://belkasoft.com/forensic-analysis-of-lnk-files"
     - "https://forensafe.com/blogs/lnkfile.html"
-artefact:
+artifact:
   path: 
     - '\Users\*\AppData\Roaming\Microsoft\Windows\Recent\*'

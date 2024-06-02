@@ -1,13 +1,7 @@
-use std::ffi::OsStr;
-// use std::path::Path;
 use crate::collect::Collect;
 use collector_vss::{Vss,info::VSSObj};
 
-// use tokio::fs::DirEntry;
-// use std::ffi::OsString;
-
 use log::*;
-// use anyhow::{Result,anyhow};
 use std::path::PathBuf;
 use std::env;
 use tokio::fs;
@@ -16,17 +10,17 @@ use uuid::Uuid;
 pub struct CollectVss {
 	pub drive_letter: String,
 	pub dst: String,
-	pub list_artefacts: Vec<String>,
+	pub list_artifacts: Vec<String>,
 	vss_obj: Vss
 }
 
 impl CollectVss {
-	pub fn new(drive_letter:&str, dst: &str, list_artefacts: Vec<String>) -> Self{
+	pub fn new(drive_letter: String, dst: String, list_artifacts: Vec<String>) -> Self{
 
 		CollectVss {
-			drive_letter: drive_letter.to_string(),
-			dst: dst.to_string(),
-			list_artefacts: list_artefacts,
+			drive_letter: drive_letter.clone(),
+			dst: dst,
+			list_artifacts: list_artifacts,
 			vss_obj: Vss::new(drive_letter.to_string()),
 		}
 	}
@@ -34,15 +28,12 @@ impl CollectVss {
 	pub fn get_list(&self){
 		let vss_engine = Vss::new("C:\\".to_string());
 		let _m = vss_engine.get_list();
-		// println!("{:?}",m);
-		// println!("{:?}",vss_engine.get_all_list());
-		// vss_engine.mount_vss(&PathBuf::from("symlinkvss"));
 	}
 
 	pub async fn collect(&self){
 		let vss_list_item: Vec<VSSObj> = match self.vss_obj.get_list() {
 			Ok(is_list) =>   is_list,
-			Err(_get_err) => {println!("{:?}",_get_err );return},
+			Err(get_err) => {println!("{:?}",get_err );return},
 		};
 
 		// Create temporary path to store vss
@@ -57,12 +48,8 @@ impl CollectVss {
 				let dir_as_path: PathBuf = mounted_vss.clone();
 				let vss_path_str: &str = dir_as_path.to_str().unwrap();
 				let get_dst = &self.dst;
-				let dst_as_path: PathBuf = PathBuf::from(get_dst);
-				let name_dir: &OsStr = mounted_vss.file_name().unwrap();
-				let concat_dst_vss: PathBuf = dst_as_path.join(name_dir);
-				let end_dst_str: &str = concat_dst_vss.to_str().unwrap();
 				info!("[VSS] Start collecting VSS");
-				let mut collector_obj = Collect::new(vss_path_str,end_dst_str,self.list_artefacts.clone(),true);
+				let mut collector_obj = Collect::new(vss_path_str.into(),get_dst.into(),self.list_artifacts.clone()).await;
 				collector_obj.vss(vss_item.clone());
 	  		  	collector_obj.start().await;
 				info!("[VSS] End collecting VSS");

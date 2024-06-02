@@ -5,6 +5,6 @@ metadata:
   category: "Windows"
   source:
     - "https://security.opentext.com/appDetails/RDP-Cached-Bitmap-Extractor"
-artefact:
+artifact:
   path: 
     - '\Users\*\AppData\Local\Microsoft\Terminal Server Client\Cache\*'

@@ -3,7 +3,7 @@ metadata:
   description: "AppCompat files"
   date: "29/03/2024"
   category: "Windows"
-artefact:
+artifact:
   group: 
     - 'Amcache'
     - 'RecentFileCache'
@@ -17,7 +17,7 @@ metadata:
   category: "Windows"
   source: 
     - "https://artifacts-kb.readthedocs.io/en/latest/sources/windows/AMCache.html"
-artefact:
+artifact:
   path: 
     - '\Windows\AppCompat\Programs\Amcache.hve'
     - '\Windows\appcompat\Programs\Amcache.hve.Log1'
@@ -32,7 +32,7 @@ metadata:
   category: "Windows"
   source: 
     - "https://artifacts-kb.readthedocs.io/en/latest/sources/windows/RecentFileCache.html"
-artefact:
+artifact:
   path: 
     - '\Windows\AppCompat\Programs\RecentFileCache.bcf'
     - '\Windows\appcompat\Programs\RecentFileCache.bcf'

@@ -228,7 +228,6 @@ impl VSSObj {
 		Ok(vss_list)
 
 		}
-
 	}
 }
 

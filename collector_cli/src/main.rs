@@ -1,63 +1,59 @@
-// mod list_parse;
-// use list_parse::ArtefactListing;
+mod list_parse;
+mod args;
+
+use args::*; 
+use list_parse::{ArtifactListing,};
 use collector_engine::collect::Collect;
-use collector_engine::parser::{YamlParser, YamlArtefact};
+use collector_engine::parser::{YamlParser, YamlArtifact};
 use collector_engine::vss::CollectVss;
 use std::fs::File;
 use clap::Parser;
 use log::*;
 use simplelog::*;
-
 use std::time;
-
-/// This is a best and fast artefact collector.
-#[derive(Parser, Debug)]
-#[command(version, about, long_about = None)]
-struct Args{
-    /// The source of collecting artefact.
-    #[arg(short,long, default_value="C:\\")]
-    source: String,
-
-    /// The destination of collecting artefact. 
-    #[arg(short,long, default_value=".\\out\\")]
-    destination: String,
-
-    /// Ressources selection.
-    #[arg(short,long, default_value="All",value_delimiter = ',')]
-    ressources: Vec<String>,
-
-    /// The path of artefact ressource collection.
-    #[arg(short,long,default_value=".\\ressources\\")]
-    path_ressources: String,
-
-    /// Zip output directory.
-    #[arg(long="zip")]
-    zip_name: Option<String>,
-
-    /// Collect from vss.
-    #[arg(long)]
-    vss: bool,
-
-    /// Print log output in terminal. (Little bit longer)
-    #[arg(long)]
-    log: bool,
-
-    /// Verbose log
-    #[arg(short,long)]
-    verbose: bool,
-
-
-}
+use chrono::Utc;
+use sysinfo::System;
 
 #[tokio::main]
 async fn main(){
     // Argument parser
-    let args = Args::parse();
+    let args = ArgsCollector::parse();
     let src_string = args.source;
     let dst_string = args.destination;
-    let zip_name = args.zip_name;
+    let zip_name = args.zip;
+    let zip_password = args.pass;
     let get_logging = args.log;
     let verbose = args.verbose;
+
+
+    if args.command.is_some() {
+        let args_unwrap = args.command.unwrap(); 
+        match args_unwrap {
+            RessourcesCommand::Ressources(listing) => {
+                let parser_obj: YamlParser = YamlParser::new(args.path_ressources.clone());
+                let listor = parser_obj.get_yaml_file();
+                let doc_artifacts: Vec<YamlArtifact> = parser_obj.get_doc_struct(listor).await;
+                let load_art_list = ArtifactListing::load(doc_artifacts);
+                match listing.command {
+                    ListRessources::Targets => {
+                        for name in load_art_list.names_pa(){
+                            println!("{}",name);
+                        }
+                        ;return},
+                    ListRessources::Groups => {
+                        for name in load_art_list.names_gr(){
+                            println!("{}",name);
+                        }
+                        ;return},
+                    ListRessources::Categories => {
+                        for name in load_art_list.list_categories(){
+                            println!("{}",name);
+                        }
+                        ;return},
+                };
+            },
+        }
+    }
 
     let mut config = ConfigBuilder::new()
         .set_time_format_rfc3339()
@@ -68,7 +64,9 @@ async fn main(){
             .set_time_format_rfc3339()
             .build();
     }
-
+    let get_time = Utc::now().timestamp().to_string();
+    let get_hostname = System::host_name().unwrap();
+    let name_log_file = format!("collector_{}_{}.log",get_hostname,get_time);
     // logger
     if get_logging {        
         CombinedLogger::init(vec![
@@ -81,7 +79,7 @@ async fn main(){
             WriteLogger::new(
                 LevelFilter::Info,
                 config.clone(),
-                File::create("collector.log").unwrap(),
+                File::create(&name_log_file).unwrap(),
             ),
         ]).unwrap();
     }else{
@@ -89,7 +87,7 @@ async fn main(){
             WriteLogger::new(
                 LevelFilter::Info,
                 config.clone(),
-                File::create("collector.log").unwrap(),
+                File::create(&name_log_file).unwrap(),
             ),
         ]).unwrap();
     }
@@ -97,10 +95,11 @@ async fn main(){
     let now = time::Instant::now();
 
     info!("{}","=".repeat(50));
-    info!("Source of artefact: \"{}\"",src_string);
-    info!("Destination of artefact: \"{}\"",dst_string);
+    info!("Source of artifact: \"{}\"",src_string);
+    info!("Destination of artifact: \"{}\"",dst_string);
     info!("List of ressources collect: {:?}",args.ressources);
     info!("Path of getting ressources files: \"{}\"",args.path_ressources);
+    info!("Output file log: \"{}\"",&name_log_file);
     info!("{}","=".repeat(50));
 
 
@@ -109,36 +108,31 @@ async fn main(){
     let arg_ressources = args.ressources;
     let mut parser_obj: YamlParser = YamlParser::new(args.path_ressources);
     let listor = parser_obj.get_yaml_file();
-    let doc_artefacts: Vec<YamlArtefact> = parser_obj.get_doc_struct(listor).await;
-    let list_artefacts: Vec<String> = parser_obj.select_artefact(arg_ressources,doc_artefacts);
+    let doc_artifacts: Vec<YamlArtifact> = parser_obj.get_doc_struct(listor).await;
+    let list_artifacts: Vec<String> = parser_obj.select_artifact(arg_ressources,doc_artifacts);
     info!("End to parse yaml ressources files");
     
     
     // Start collect
-    info!("Start to collect artefact");
-    // let collector_obj = Collect::new(&src_string,&dst_string,list_artefacts.clone(),false);
-    let mut collector_obj = Collect::new(&src_string,&dst_string,list_artefacts.clone(),false);
+    info!("Start to collect artifact");
+    let mut collector_obj = Collect::new(src_string.clone(),dst_string.clone(),list_artifacts.clone()).await;
     let _collector_obj_start = collector_obj.start().await;
-    info!("End to collect artefact");
+    info!("End to collect artifact");
 
     // Start collect vss
     let if_vss: bool = args.vss;
     if if_vss{
-        info!("Start to collect artefact from VSS");
-        let vss_obj = CollectVss::new(&src_string,&dst_string,list_artefacts.clone());
-        // vss_obj.get_list();
+        info!("Start to collect artifact from VSS");
+        let vss_obj = CollectVss::new(src_string.clone(),dst_string,list_artifacts.clone());
         vss_obj.collect().await;
-        info!("End to collect artefact from vss");
+        info!("End to collect artifact from vss");
     }
 
     // zip if need
-    match zip_name{
-        Some(name) => {
-            info!("Start to zip output directory");
-            let _ = collector_obj.zip(name);
-            info!("End to zip output directory");
-        },
-        None => (),
+    if zip_name{
+        info!("Start to zip output directory");
+        let _result = collector_obj.zip(zip_password).await;
+        info!("End to zip output directory");
     }
 
     let elapsed_time = now.elapsed();

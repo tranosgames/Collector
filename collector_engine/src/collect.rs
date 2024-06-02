@@ -1,152 +1,148 @@
-use tokio::fs::File;
-use filetime::FileTime;
-use crate::lowfs;
 use crate::writer::Writer;
+use crate::helper::{FormatSource,is_admin};
+use crate::extract::{try_filesystem,try_ntfs};
+use crate::csv::{CsvLog,CsvLogItem};
+
 use collector_vss::info::VSSObj;
 
-use std::path::{PathBuf};
-use regex::Regex;
+use tokio::fs::File;
+use tokio::io::AsyncReadExt;
+use filetime::FileTime;
+use std::path::PathBuf;
 use glob::glob;
-use tokio::fs;
-use log::*;
 use anyhow::Result;
+use sha1::{Sha1,Digest};
+// use log::*;
 
 
-#[derive(Clone)]
 pub struct Collect {
 	pub src: String,
 	pub dst: String,
-	pub artefacts_glob: Vec<String>,
+	pub artifacts_glob: Vec<String>,
 	writer: Writer,
 	vss_item: Option<VSSObj>,
-	remove_src_file: bool,
+	csv_copy: CsvLog,
 }
 
 impl Collect{
-	pub fn new(src: &str, dst: &str, artefacts_glob: Vec<String>, remove_src_file: bool) -> Collect{
-		let create_writer: Writer = Writer::new(dst);
+	pub async fn new(src: String, dst: String, artifacts_glob: Vec<String>) -> Collect{
+		let create_writer: Writer = Writer::new(dst.clone());
+		let csv_filename = create_writer.get_filepath_as_str("Collector_copy.csv".into());
+		let _create_csv = create_writer.create_file("Collector_copy.csv".into()).await;
 		Collect { 
 			src: src.to_string(), 
 			dst: dst.to_string(), 
-			artefacts_glob: artefacts_glob,
+			artifacts_glob: artifacts_glob,
 			writer: create_writer,
 			vss_item: None,
-			remove_src_file: remove_src_file,
+			csv_copy: CsvLog::new(csv_filename).await,
 		}
 	}
 
 	pub async fn start(&mut self){
-		let artefact_iter = &self.artefacts_glob;
-		if !self.src.ends_with("\\"){
-			self.src.push('\\');
+		if !is_admin(){
+			panic!("You need to run as Administrator!");
 		}
-		for artefact in artefact_iter {
-			let src_path: PathBuf = PathBuf::from(self.src.clone());
-			let mut format_artefact_name: String = artefact.to_string();
-			if format_artefact_name.starts_with("\\"){
-				format_artefact_name.remove(0);
+		let artifact_iter = self.artifacts_glob.clone();
+		for artifact in artifact_iter {
+			let mut artifact_element = artifact.to_string();
+			if artifact_element.starts_with("\\"){
+				artifact_element.remove(0);
 			}
-			let src_path_artefact =  src_path.join(format_artefact_name);
-			let source_with_artefact_out = src_path_artefact.to_str().unwrap();
-			for entry in glob(source_with_artefact_out).expect("Error for parsing artefact"){
-				let to_entry = entry.unwrap();
+
+			let src_path: PathBuf = FormatSource::from(&self.src).to_path();
+			let src_path_artifact =  src_path.join(artifact_element);
+
+			let source_with_artifact_out: &str = src_path_artifact.to_str().unwrap();
+			for entry in glob(source_with_artifact_out).expect("Error for parsing artifact"){
+				let mut to_entry = entry.unwrap(); // DirEntry()
 				if to_entry.as_path().is_file(){
-					let mut mod_entry: String = to_entry.to_str().unwrap().to_string().replace(":","");
-					if self.remove_src_file{
-						let check_src = self.src.replace(":","");
-						let mod_dst_str: String  = mod_entry.replace(&check_src,"");
-						mod_entry = mod_dst_str;
+					let for_metadata = to_entry.clone();
+					let mut mod_entry: String = to_entry.to_str().unwrap().to_string();
+					if self.vss_item.is_some(){
+						let get_vss_item = self.vss_item.clone().unwrap();
+						let vss_as_path = PathBuf::from(&get_vss_item.device_volume_name);
+						let get_vss_name = vss_as_path.file_name().unwrap();
+						mod_entry = mod_entry.replace(&self.src, get_vss_name.to_str().unwrap());
 					}
 
-					let output_file: File = self.writer.create_file(&mod_entry).await;
-					let high_level_res = self.try_high_level(&to_entry).await;
-					match high_level_res {
-						Ok(_) => continue,
+					let mut output_file: File = self.writer.create_file(mod_entry.clone()).await;
+
+					// For filesystem
+					match try_filesystem(to_entry.clone(),&mut output_file).await {
+						Ok(_) => {
+							let filepath_art = self.writer.get_filepath_as_str(mod_entry.clone()).clone();
+							self.to_csv(mod_entry.clone(),filepath_art,false).await;
+							continue;
+						},
 						Err(_) => ()
 					}
-					match self.try_low_level(&to_entry,output_file).await {
-						Ok(_) => (),
-						Err(_) => (),
+
+					// For ntfs
+					let item: Option<VSSObj> = self.vss_item.clone();
+					if item.is_some(){
+						let pathbuf_to_str = to_entry
+							.to_str()
+							.unwrap()
+							.to_string();
+						let add_backslah = self.src.clone() + "\\";
+						to_entry = pathbuf_to_str.replace(&add_backslah,"").into();
+					}
+					match try_ntfs(to_entry,&mut output_file,item).await {
+						Ok(_) => {
+							// Set Metadata on new file
+							let metadata = std::fs::metadata(for_metadata).expect("Failed to extract metedata");
+							let mtime = FileTime::from_last_modification_time(&metadata);
+							let atime = FileTime::from_last_access_time(&metadata);
+							let resolver = self.writer.get_filepath(mod_entry.clone());
+							let _ = filetime::set_file_times(resolver,atime,mtime);
+
+							let filepath_art = self.writer.get_filepath_as_str(mod_entry.clone());
+							self.to_csv(mod_entry.clone(),filepath_art,true).await;
+						},
+						Err(_) => ()
 					}
 				}
 			}
 		}
 	}
 
-	pub fn zip(&self,zip_name: String) -> Result<()>{
-		let zipping = self.writer.zip(zip_name);
-		zipping
+	pub async fn zip(&self,zip_password: Option<String>) -> Result<()>{
+		let zipping = self.writer.zip(zip_password);
+		zipping.await
 	}
 
 	pub fn vss(&mut self, vss_item: VSSObj){
 		self.vss_item = Some(vss_item);
 	}
 
-	async fn try_high_level(&self, artefact_entry: &PathBuf) -> Result<(),>{
-		let format_entry: &str = artefact_entry.to_str().unwrap();
-		let mut get_path_file: PathBuf = self.writer.get_filepath(format_entry);
-		if self.remove_src_file{
-			let check_src = self.src.replace(":","");
-			let mod_dst = get_path_file.to_str().unwrap().to_string();
-			let mod_dst_str = mod_dst.replace(&check_src,"");
-			get_path_file = PathBuf::from(mod_dst_str);
-		}
-		if let Err(err) = fs::copy(format_entry, get_path_file).await {
-			error!("Impossible to extract file in user land: {}",format_entry);
-			Err(err.into())
-		}else{
-			info!("A file has been recover from user land: {}",format_entry);
-			Ok(())
-		}
-	}
+	async fn to_csv(&mut self, source_artifact: String, destination_artifact: String , from_ntfs: bool){
+		let mut log_item: CsvLogItem = Default::default();
+		log_item.source_file = source_artifact.clone();
+		log_item.destination_file = destination_artifact.clone();
 
-	async fn try_low_level(&self, artefact_entry: &PathBuf, filer: File) -> Result<(),>{
-		let format_entry: &str = artefact_entry.to_str().unwrap();
-		let drive_letter: String = self.get_drive_letter(format_entry).expect("Can't get drive letter from this path");
-		let mut volume_entry: String = drive_letter.clone(); 
-		if self.vss_item.is_some(){
-			let vss_volume = self.vss_item.clone().unwrap();
-			volume_entry = vss_volume.device_volume_name.replace("\\\\?\\","");
-		}
-		
-	 	// Create output file 
-	 	let mut output_path: String = format_entry.to_string();
-	 	if self.remove_src_file{
-			let mod_dst_str: String  = output_path.replace(&self.src,"");
-			output_path = mod_dst_str;
-		}
-		let available_artefact = output_path.replace(&drive_letter,"");
-		let out_info = lowfs::extract_ntfs(&volume_entry,&available_artefact, filer).await;
-		
-		// Set Metadata on new file
-		let metadata = std::fs::metadata(format_entry).expect("Failed to extract metedata");
+		let metadata = std::fs::metadata(&destination_artifact).expect("Failed to extract metedata");
 		let mtime = FileTime::from_last_modification_time(&metadata);
 		let atime = FileTime::from_last_access_time(&metadata);
-		let resolver = self.writer.get_filepath(&output_path);
-		let _ = filetime::set_file_times(resolver,atime,mtime);
 
-		match out_info {
-			Ok(res) => {
-				info!("{}",res);
-				Ok(())
-			},
-			Err(err) => {
-				error!("Impossible to extract file: {} ",format_entry);
-				Err(err)
-			},
-		}
-	}
+		log_item.modfified_time = mtime.to_string();
+		log_item.access_time = atime.to_string();
+		log_item.from_ntfs = from_ntfs;
 
-	fn get_drive_letter(&self,path: &str) -> Option<String> {
-		let format_path: &str = path;
-		let drive_letter_regex = Regex::new(r"(^[A-Za-z]:\\)").expect("Failed to parse regex");
-		let caps = drive_letter_regex.captures(format_path);
-		if caps.is_some(){
-			let drive_letter = caps.unwrap().get(0).map_or("", |m| m.as_str());
-			Some(drive_letter.to_string())      
-		}else{
-			None
+
+		let mut get_file = File::open(destination_artifact).await.unwrap();
+		let mut hasher = Sha1::new();
+		let mut contents = [0u8; 4092];
+		loop {
+			let reader = get_file.read(&mut contents).await;
+			if reader.unwrap() == 0{
+				break;
+			}
+			hasher.update(contents);
 		}
+		log_item.hasfile_sha256 = hex::encode(hasher.finalize());
+
+		let _ = self.csv_copy.add_row_struct(log_item).await;
 	}
 
 }

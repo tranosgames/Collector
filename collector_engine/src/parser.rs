@@ -4,9 +4,9 @@ use glob::glob;
 use serde::{Serialize,Deserialize};
 
 #[derive(Debug,Serialize,Deserialize,Clone)]
-pub struct YamlArtefact {
+pub struct YamlArtifact {
 	pub metadata: Metadata,
-	pub artefact: Artefact
+	pub artifact: Artifact
 }
 
 #[derive(Debug,Serialize,Deserialize,Clone)]
@@ -19,7 +19,7 @@ pub struct Metadata {
 }
 
 #[derive(Debug,Serialize,Deserialize,Clone)]
-pub struct Artefact{
+pub struct Artifact{
 	pub path: Option<Vec<String>>,
 	pub group: Option<Vec<String>>
 }
@@ -27,7 +27,7 @@ pub struct Artefact{
 #[derive(Clone)]
 pub struct YamlParser {
 	pub ressource_path: String,
-	artefact_element_glob: Vec<String>,
+	artifact_element_glob: Vec<String>,
 }
 
 impl YamlParser{
@@ -39,7 +39,7 @@ impl YamlParser{
 		let _format_ressource_path = format_ressource_path.push_str("**/*.yaml");
 		YamlParser {
 			ressource_path: format_ressource_path.to_string(),
-			artefact_element_glob: Vec::new(),
+			artifact_element_glob: Vec::new(),
 		}
 	}
 
@@ -52,23 +52,23 @@ impl YamlParser{
 		list_yaml_file
 	}
 
-	pub async fn get_doc_struct(&self, list_file: Vec<PathBuf>) -> Vec<YamlArtefact> {
+	pub async fn get_doc_struct(&self, list_file: Vec<PathBuf>) -> Vec<YamlArtifact> {
 		let mut parse_file = Vec::new();
 		for file in list_file{
 			let reader = fs::read_to_string(file.clone()).await;
 			for document in serde_yml::Deserializer::from_str(&reader.unwrap()){
-				let value = YamlArtefact::deserialize(document);
-				match &value.as_ref().unwrap().artefact.path{
+				let value = YamlArtifact::deserialize(document);
+				match &value.as_ref().unwrap().artifact.path{
 					None => {
-						match &value.as_ref().unwrap().artefact.group{
-							None => panic!("Error of file {:?}: artefact.group and artefact.path have not been found!", &file),
+						match &value.as_ref().unwrap().artifact.group{
+							None => panic!("Error of file {:?}: artifact.group and artifact.path have not been found!", &file),
 							Some(_) => ()
 						}
 					}
 					Some(_) => {
-						match &value.as_ref().unwrap().artefact.group{
+						match &value.as_ref().unwrap().artifact.group{
 							None => (),
-							Some(_) => panic!("Error of file {:?}: artefact.group and artefact.path have been found, please select a choice element!", &file)
+							Some(_) => panic!("Error of file {:?}: artifact.group and artifact.path have been found, please select a choice element!", &file)
 						}
 					}
 				}
@@ -82,29 +82,29 @@ impl YamlParser{
 		parse_file
 	}
 
-	pub fn select_artefact(&mut self, artefacts_name: Vec<String>, doc_artefact: Vec<YamlArtefact>) -> Vec<String>{
-		let get_doc_artefact = doc_artefact;
-		for artefact_want in artefacts_name{
-			let get = &get_doc_artefact.iter().find(|e| e.metadata.name == artefact_want);
+	pub fn select_artifact(&mut self, artifacts_name: Vec<String>, doc_artifact: Vec<YamlArtifact>) -> Vec<String>{
+		let get_doc_artifact = doc_artifact;
+		for artifact_want in artifacts_name{
+			let get = &get_doc_artifact.iter().find(|e| e.metadata.name == artifact_want);
 			match get {
 				Some(struct_element) => {
-					match &struct_element.artefact.group {
-						Some(name_artefact_file) => self.select_artefact(name_artefact_file.to_vec(),get_doc_artefact.clone()),
+					match &struct_element.artifact.group {
+						Some(name_artifact_file) => self.select_artifact(name_artifact_file.to_vec(),get_doc_artifact.clone()),
 						None => Vec::new()
 					};
-					match &struct_element.artefact.path {
-						Some(name_artefact_elements) => name_artefact_elements.iter().for_each(|e| {
-								if !&self.artefact_element_glob.contains(e){
-									&self.artefact_element_glob.push(e.to_string())
+					match &struct_element.artifact.path {
+						Some(name_artifact_elements) => name_artifact_elements.iter().for_each(|e| {
+								if !&self.artifact_element_glob.contains(e){
+									&self.artifact_element_glob.push(e.to_string())
 								}else{&()};
 							}
 						),
 						None => ()
 					};
 				},
-				None => panic!("Error of artefact argument : \"{}\" name not found in file ressources",&artefact_want),
+				None => panic!("Error of artifact argument : \"{}\" name not found in file ressources",&artifact_want),
 			}
 		}
-		self.artefact_element_glob.clone()
+		self.artifact_element_glob.clone()
 	}
 }

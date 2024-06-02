@@ -60,7 +60,4 @@ impl Vss {
 #[cfg(test)]
 mod tests {
 
-    #[test]
-    fn extract_vss_list() {
-    }
 }

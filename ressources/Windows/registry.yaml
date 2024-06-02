@@ -5,7 +5,7 @@ metadata:
   category: "Windows"
   source: 
     - "https://artifacts-kb.readthedocs.io/en/latest/sources/windows/RegistryFiles.html"
-artefact:
+artifact:
   path: 
     - '\Windows\System32\config\SAM'
     - '\Windows\System32\config\SAM.LOG1'

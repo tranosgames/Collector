@@ -6,7 +6,7 @@ metadata:
   source:
     - "https://github.com/jklepsercyber/defender-detectionhistory-parser"
     - "https://www.crowdstrike.com/blog/how-to-use-microsoft-protection-logging-for-forensic-investigations/"
-artefact:
+artifact:
   path: 
     - '\ProgramData\Microsoft\Windows Defender\Scans\History\Service\DetectionHistory\**\*'
     - '\ProgramData\Microsoft\Windows Defender\Support\*'

@@ -3,7 +3,7 @@ members = ["collector_cli","collector_engine", "collector_gui", "collector_vss"]
 resolver = "2"
 
 [workspace.package]
-version = "0.2.0"
+version = "1.0.0"
 edition = "2021"
 authors = ["Tranos"]
 description = "This tool was an artefact collector fast and secure. It can collect low level files."

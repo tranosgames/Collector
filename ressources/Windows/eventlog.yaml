@@ -5,6 +5,6 @@ metadata:
   category: "Windows"
   source: 
     - "https://artifacts-kb.readthedocs.io/en/latest/sources/windows/EventLog.html"
-artefact:
+artifact:
   path: 
     - '\Windows\System32\winevt\Logs\*.evtx'

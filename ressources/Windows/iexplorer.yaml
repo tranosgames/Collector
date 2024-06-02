@@ -5,7 +5,7 @@ metadata:
   category: "Windows"
   source: 
     - "https://www.foxtonforensics.com/browser-history-examiner/internet-explorer-history-location"
-artefact:
+artifact:
   path: 
     - '\Users\*\LocalSettings\History\History.IE5'
     - '\Users\*\AppData\Local\Microsoft\Windows\History\History.IE5'

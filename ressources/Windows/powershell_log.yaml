@@ -5,6 +5,6 @@ metadata:
   category: "Windows"
   source:
     - "https://0xdf.gitlab.io/2018/11/08/powershell-history-file.html"
-artefact:
+artifact:
   path: 
     - '\Users\*\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt'

@@ -3,7 +3,7 @@ metadata:
   description: "This is regroup all browsers file artefact"
   date: "29/03/2024"
   category: "Collection"
-artefact:
+artifact:
   group:
     - "Edge"
     - "Brave"

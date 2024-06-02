@@ -1,29 +1,57 @@
-# Collector Binary
+# Collector
+
 This tool can collect different artifact on running system.
-Like a kape but faster, more secure and open source.
 
+Like a kape but faster, more secure and open source in rust 🦀.
 
-## Help command
+## 🏗️ Build Poject
+
+You need to install [rust](https://www.rust-lang.org/fr/tools/install) on you computer.
+
+You can use this following command to run the project for test:
+
 ```bash
-This tool was an artefact collector fast and secure. It can collect low level files.
+cargo run --bin collector_cli -- -h
+```
 
-Usage: collector_cli.exe [OPTIONS]
+Or build in production mode:
+
+```bash
+cargo build --release --bin collector_cli
+```
+## Run collector
+
+The project is build to easy to run.
+You can just start the binary and the process go to start.
+
+## 🆘 Help command
+
+```bash
+This tool was an artifact collector fast and secure. It can collect low level files.
+
+Usage: collector_cli.exe [OPTIONS] [COMMAND]
+
+Commands:
+  ressources  Ressource list options
+  help        Print this message or the help of the given subcommand(s)
 
 Options:
   -s, --source <SOURCE>
-          The source of collecting artefact [default: C:]
+          The source of collecting artifact [default: C:\]
   -d, --destination <DESTINATION>
-          The destination of collecting artefact [default: .\out\]
+          The destination of collecting artifact [default: .\out\]
   -r, --ressources <RESSOURCES>
-          Ressources selection [default: All]
+          Ressources selection. You can list with "ressources" command. Exemple: MFT,Prefetch,EVTX [default: All]
   -p, --path-ressources <PATH_RESSOURCES>
-          The path of artefact ressource collection [default: .\ressources\]
-      --zip <ZIP_NAME>
-          Zip output directory
+          Path to artifact resources [default: .\ressources\]
+      --zip
+          Zip the output directory
+      --pass <PASS>
+          Set zip password
       --vss
-          Collect from vss
+          Collect from vss. (longer)
       --log
-          Print log output in terminal. (Little bit longer)
+          Print log output in terminal. (longer)
   -v, --verbose
           Verbose log
   -h, --help
@@ -32,14 +60,14 @@ Options:
           Print version
 ```
 
-## Next project
+## 👨‍💻 Features
+
+- [X] VSS (Collect from volume shadow copy)
+- [X] Add ZIP password
+- [ ] Emebed config file and ressources to execute in click and lauch binary. 
+- [ ] Export to VHDX
+
+## 🖼️ Next project
 
 At the end of this project, I developping a GUI to interact easier with the binary.
 
-## Features
-
-- [X] VSS (Collect from volume shadow copy)
-- [ ] Emebed config file and ressources to execute in click and lauch binary. 
-- [ ] Add ZIP password
-- [ ] Export to VHDX
-- [ ] Can export to 7zip

@@ -3,7 +3,7 @@ metadata:
   description: "Windows search file"
   date: "29/03/2024"
   category: "Windows"
-artefact:
+artifact:
   path: 
     - '\ProgramData\Microsoft\Search\Data\Applications\Windows\GatherLogs\SystemIndex\*'
     - '\ProgramData\Microsoft\Search\Data\Applications\Windows\Windows.edb'

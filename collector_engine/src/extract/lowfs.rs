@@ -1,14 +1,14 @@
-use tokio::fs::File;
 use tokio::io::AsyncWriteExt;
+use tokio::fs::File;
 use anyhow::{Result,anyhow};
 
 use std::io::{Read,Seek,BufReader};
-use std::path::{PathBuf,Path};
+// use std::path::{PathBuf,Path};
 
 use ntfs::{Ntfs,NtfsFile,NtfsReadSeek};
 use ntfs::indexes::NtfsFileNameIndex;
 
-use crate::sector_reader::SectorReader;
+use crate::extract::sector_reader::SectorReader;
 
 struct InfoFS<'n, T>
 where
@@ -18,16 +18,9 @@ where
     ntfs: &'n Ntfs,
 }
 
-pub async fn extract_ntfs(drive_letter: &str, artefact_name: &str, output_file: File) -> Result<String,>{
-	let mut concat_source = String::from("\\\\?\\");
-	let mut drive_letter = drive_letter.to_string() ;
-	if drive_letter.ends_with("\\"){
-		let _ = &drive_letter.pop();
-	}
-	let _ = &concat_source.push_str(&drive_letter);
-	let src_path: &Path = &PathBuf::from(&concat_source);
+pub async fn extract_ntfs(device_name: String, artifact_name: String, output_file: &mut File) -> Result<String,>{
 	// Create ntfs struct
-	let f = std::fs::File::open(src_path)?;
+	let f = std::fs::File::open(device_name.clone())?;
 	let sr = SectorReader::new(f,4096)?;
 	let mut fs = BufReader::new(sr);	
 	let mut ntfs = Ntfs::new(&mut fs)?;
@@ -40,40 +33,38 @@ pub async fn extract_ntfs(drive_letter: &str, artefact_name: &str, output_file: 
 	};
 	
 	// Find file or path
-	let mut split_artefact: Vec<&str> = artefact_name.split('\\').collect();
-	let binding = split_artefact.clone();
+	let mut split_artifact: Vec<&str> = artifact_name.split('\\').collect();
+	let binding = split_artifact.clone();
  	let get_filename = binding.last();
-	let _ = &split_artefact.pop();
-	if split_artefact.len() > 1 {
-		let _ = move_to(&mut infofs, split_artefact);
-		let file = from_to(&mut infofs, get_filename.unwrap());
+	let _ = &split_artifact.pop();
+	if split_artifact.len() > 1 {
+		let _ = move_to(&mut infofs, split_artifact);
+		let file = from_to(&mut infofs, get_filename.unwrap().to_string());
 		match file{
 			Ok(_) => {
-				// let output_file = writer::create_output_file(dest_file,artefact_name).await;	
 				let _ = write_out(&mut infofs,output_file,file?).await;
 			}
 			Err(e) => return Err(anyhow!(e)), 
 		}
 	}else{
-		let file = from_to(&mut infofs, artefact_name);
+		let file = from_to(&mut infofs, artifact_name.clone());
 		match file{
 			Ok(_) => {
-				// let output_file = writer::create_output_file(dest_file,artefact_name).await;	
 				let _ = write_out(&mut infofs,output_file,file?).await;
 			}
 			Err(e) => return Err(anyhow!(e)), 
 		}
 	}
-	let _ = &concat_source.push_str("\\");
-	let _full_artefact_path = concat_source.push_str(&artefact_name);
-	Ok(format!("A file has been recover: {}",&concat_source))
+	// let _ = &device_name.push_str("\\");
+	let full_artifact_path = device_name + "\\" + &artifact_name;
+	Ok(format!("A file has been recover: {}",full_artifact_path))
 }
 
-fn move_to<T>(infofs: &mut InfoFS<T>,artefact_path: Vec<&str>) -> Result<()>
+fn move_to<T>(infofs: &mut InfoFS<T>,artifact_path: Vec<&str>) -> Result<()>
 where
     T: Read + Seek,
 {
-	for path in artefact_path{
+	for path in artifact_path{
 		let index = infofs.current_directory.last().unwrap().directory_index(&mut infofs.fs)?;
 		let mut finder = index.finder();
 		let entry = NtfsFileNameIndex::find(&mut finder, infofs.ntfs, &mut infofs.fs, path);
@@ -87,22 +78,22 @@ where
 
 }
 
-fn from_to<'n,T>(infofs: &mut InfoFS<'n, T>,artefact_filename: &str) -> Result<NtfsFile<'n>,>
+fn from_to<'n,T>(infofs: &mut InfoFS<'n, T>,artifact_filename: String) -> Result<NtfsFile<'n>,>
 where
 	T: Read + Seek,
 {
 	let index = infofs.current_directory.last().unwrap().directory_index(&mut infofs.fs)?;
 	let mut finder = index.finder();
-	let entry = NtfsFileNameIndex::find(&mut finder, infofs.ntfs, &mut infofs.fs, artefact_filename);
+	let entry = NtfsFileNameIndex::find(&mut finder, infofs.ntfs, &mut infofs.fs, &artifact_filename);
 	let test_entry = match entry {
 		Some(entry) => entry,
-		None => return Err(anyhow!("Error on {}:",artefact_filename)),
+		None => return Err(anyhow!("Error on file : {}",artifact_filename)),
 	};
 	let file = test_entry.unwrap().to_file(infofs.ntfs, &mut infofs.fs)?;
 	Ok(file)
 }
 
-async fn write_out<T>(infofs: &mut InfoFS<'_, T>,mut output_file: File, file: NtfsFile<'_>) -> Result<()>
+async fn write_out<T>(infofs: &mut InfoFS<'_, T>,output_file: &mut File, file: NtfsFile<'_>) -> Result<()>
 where
 	T: Read + Seek,
 {
@@ -117,7 +108,7 @@ where
 			break;
 		}
 
-		output_file.write_all(&buf[..bytes_read]).await?;
+		let _ = output_file.write_all(&buf[..bytes_read]).await?;
 	}
 	Ok(())
 }

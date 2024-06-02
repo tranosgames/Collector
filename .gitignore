@@ -15,7 +15,7 @@ Cargo.lock
 *.pdb
 
 # Logging file for collector
-collector.log
+collector_*.log
 
 # Remove default result output folder
 /out/

@@ -3,6 +3,6 @@ metadata:
   description: "Startup program at Windows start. It can be used for persistant attack"
   date: "04/04/2024"
   category: "Windows"
-artefact:
+artifact:
   path: 
     - '\Users\*\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\**\*'

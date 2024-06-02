@@ -5,7 +5,7 @@ metadata:
   category: "Windows"
   source:
     - "https://artifacts-kb.readthedocs.io/en/latest/sources/windows/ActivitiesCacheDatabase.html"
-artefact:
+artifact:
   path: 
     - 'Users\*\AppData\Local\ConnectedDevicesPlatform\L.*\ActivitiesCache.db'
     - 'Users\*\AppData\Local\ConnectedDevicesPlatform\AAD.*\ActivitiesCache.db'

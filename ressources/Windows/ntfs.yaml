@@ -3,7 +3,7 @@ metadata:
   description: "Group ntfs"
   date: "06/04/2024"
   category: "Windows"
-artefact:
+artifact:
   group: 
     - 'MFT'
     - 'RecycleBin'
@@ -14,7 +14,7 @@ metadata:
   description: "MFT table"
   date: "02/03/2024"
   category: "Windows"
-artefact:
+artifact:
   path: 
     - '\$MFT'
 ---
@@ -24,6 +24,6 @@ metadata:
   description: "Recycle bin"
   date: "04/04/2024"
   category: "Windows"
-artefact:
+artifact:
   path: 
     - '\$Recycle.Bin\**\*'

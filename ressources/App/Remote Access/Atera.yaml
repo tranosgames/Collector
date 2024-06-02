@@ -5,6 +5,6 @@ metadata:
   category: "App_Remote_Access"
   source:
     - "https://www.synacktiv.com/publications/legitimate-rats-a-comprehensive-forensic-analysis-of-the-usual-suspects"
-artefact:
+artifact:
   path: 
     - '\Program Files\ATERA Networks\AteraAgent\Packages\AgentPackageRunCommandInteractive\log.txt'
