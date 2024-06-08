@@ -5,7 +5,7 @@ use args::*;
 use list_parse::{ArtifactListing,};
 use collector_engine::collect::Collect;
 use collector_engine::parser::{YamlParser, YamlArtifact};
-use collector_engine::vss::CollectVss;
+use collector_engine::collectvss::CollectVss;
 use std::fs::File;
 use clap::Parser;
 use log::*;
@@ -13,9 +13,22 @@ use simplelog::*;
 use std::time;
 use chrono::Utc;
 use sysinfo::System;
+use std::panic;
+
+fn custom_panic_hook(){
+    panic::set_hook(Box::new(|info| {
+        // Check if the panic has a message
+        if let Some(s) = info.payload().downcast_ref::<&str>() {
+            eprintln!("{}", s);
+        } else {
+            eprintln!("An unexpected error occurred.");
+        }
+    }));
+}
 
 #[tokio::main]
 async fn main(){
+    custom_panic_hook();
     // Argument parser
     let args = ArgsCollector::parse();
     let src_string = args.source;

@@ -1,5 +1,5 @@
 use crate::collect::Collect;
-use collector_vss::{Vss,info::VSSObj};
+use crate::mount::{Vss,info::VSSObj};
 
 use log::*;
 use std::path::PathBuf;

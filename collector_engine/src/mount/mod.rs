@@ -1,6 +1,6 @@
 pub mod info;
 
-use crate::info::{VSSObj,DriveLetter};
+use crate::mount::info::{VSSObj,DriveLetter};
 use std::path::PathBuf;
 use tokio::fs;
 use anyhow::{Result,anyhow};
@@ -17,10 +17,9 @@ impl Vss {
         }
     }
 
-   
-    pub fn get_all_list(&self) -> Result<Vec<VSSObj>,>{
-        return VSSObj::get_list();
-    }
+    // pub fn get_all_list(&self) -> Result<Vec<VSSObj>,>{
+    //     return VSSObj::get_list();
+    // }
 
     pub  fn get_list(&self) -> Result<Vec<VSSObj>,>{
         let get_vss_list = match VSSObj::get_list() {

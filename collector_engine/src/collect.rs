@@ -2,8 +2,8 @@ use crate::writer::Writer;
 use crate::helper::{FormatSource,is_admin};
 use crate::extract::{try_filesystem,try_ntfs};
 use crate::csv::{CsvLog,CsvLogItem};
+use crate::mount::info::VSSObj;
 
-use collector_vss::info::VSSObj;
 
 use tokio::fs::File;
 use tokio::io::AsyncReadExt;

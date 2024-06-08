@@ -1,7 +1,8 @@
 pub mod collect;
 pub mod writer;
 pub mod parser;
-pub mod vss;
+pub mod collectvss;
+mod mount;
 mod extract;
 mod csv;
 mod helper;
