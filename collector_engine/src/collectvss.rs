@@ -1,5 +1,5 @@
 use crate::collect::Collect;
-use crate::mount::{Vss,info::VSSObj};
+use crate::mount::{Vss,vss_info::VSSObj};
 
 use log::*;
 use std::path::PathBuf;
@@ -33,7 +33,10 @@ impl CollectVss {
 	pub async fn collect(&self){
 		let vss_list_item: Vec<VSSObj> = match self.vss_obj.get_list() {
 			Ok(is_list) =>   is_list,
-			Err(get_err) => {println!("{:?}",get_err );return},
+			Err(get_err) => {
+				println!("{:?}",get_err);
+				return
+			},
 		};
 
 		// Create temporary path to store vss

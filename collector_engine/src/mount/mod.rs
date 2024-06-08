@@ -1,6 +1,6 @@
-pub mod info;
+pub mod vss_info;
 
-use crate::mount::info::{VSSObj,DriveLetter};
+use crate::mount::vss_info::{VSSObj,DriveLetter};
 use std::path::PathBuf;
 use tokio::fs;
 use anyhow::{Result,anyhow};

@@ -2,7 +2,7 @@ use crate::writer::Writer;
 use crate::helper::{FormatSource,is_admin};
 use crate::extract::{try_filesystem,try_ntfs};
 use crate::csv::{CsvLog,CsvLogItem};
-use crate::mount::info::VSSObj;
+use crate::mount::vss_info::VSSObj;
 
 
 use tokio::fs::File;

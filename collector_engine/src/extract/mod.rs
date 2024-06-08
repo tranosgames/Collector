@@ -1,7 +1,7 @@
 mod lowfs;
 mod sector_reader;
 
-use crate::mount::info::VSSObj;
+use crate::mount::vss_info::VSSObj;
 use std::path::PathBuf;
 use regex::Regex;
 use log::*;

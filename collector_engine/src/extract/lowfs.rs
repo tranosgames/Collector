@@ -3,7 +3,6 @@ use tokio::fs::File;
 use anyhow::{Result,anyhow};
 
 use std::io::{Read,Seek,BufReader};
-// use std::path::{PathBuf,Path};
 
 use ntfs::{Ntfs,NtfsFile,NtfsReadSeek};
 use ntfs::indexes::NtfsFileNameIndex;
