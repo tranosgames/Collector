@@ -26,7 +26,7 @@ impl FormatSource{
 		if !self.source.ends_with("/") || !self.source.ends_with("\\"){
 			self.source.push('\\');
 		}
-		if !self.source.starts_with("/") || !self.source.starts_with("\\"){
+		if self.source.starts_with("/") || self.source.starts_with("\\"){
 			self.source.remove(0);
 		}
 		self.source.clone()

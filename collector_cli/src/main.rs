@@ -2,7 +2,7 @@ mod list_parse;
 mod args;
 
 use args::*; 
-use list_parse::{ArtifactListing,};
+use list_parse::ArtifactListing;
 use collector_engine::collect::Collect;
 use collector_engine::parser::{YamlParser, YamlArtifact};
 use collector_engine::collectvss::CollectVss;

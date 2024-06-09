@@ -1,4 +1,5 @@
-use std::path::PathBuf;
+use crate::helper::FormatSource;
+use std::path::{PathBuf,Path};
 use tokio::fs;
 use glob::glob;
 use serde::{Serialize,Deserialize};
@@ -31,11 +32,18 @@ pub struct YamlParser {
 }
 
 impl YamlParser{
+	pub fn init() -> Self{
+		YamlParser {
+			ressource_path: String::new(),
+			artifact_element_glob: Vec::new(),
+		}
+	}
+
 	pub fn new(ressource_path: String) -> Self{
-		let mut format_ressource_path = ressource_path;
-    	if !format_ressource_path.ends_with('\\'){
-    	    let _ = format_ressource_path.push('\\');
-    	}
+		let mut format_ressource_path = FormatSource::from(ressource_path).to_string();
+		if !Path::new(&format_ressource_path).exists(){
+			panic!("Ressouces path doesn't exists");
+		}
 		let _format_ressource_path = format_ressource_path.push_str("**/*.yaml");
 		YamlParser {
 			ressource_path: format_ressource_path.to_string(),
@@ -75,6 +83,36 @@ impl YamlParser{
 				let out = match value {
 					Ok(expr) => expr,
 					Err(e) => panic!("Error of file {:?}: {:?}", &file,e.to_string()),
+				};
+				parse_file.push(out);
+			}
+		}
+		parse_file
+	}
+
+	pub fn get_struct_from_raw(&self, list_filename: Vec<String>, list_raw: Vec<String>) -> Vec<YamlArtifact>{
+		// vec![YamlArtifact { metadata: Metadata { name: "val".to_string(), description: "val".to_string(), date: Some("val".to_string()), category: Some("val".to_string()), source: Some(vec!["s".to_string()]) }, artifact: Artifact { path: Some(vec!["s".to_string()]), group: None } }]
+		let mut parse_file = Vec::new();
+		for num_raw_data in 0..list_raw.len(){
+			for document in serde_yml::Deserializer::from_str(&list_raw[num_raw_data]){
+				let value = YamlArtifact::deserialize(document);
+				match &value.as_ref().unwrap().artifact.path{
+					None => {
+						match &value.as_ref().unwrap().artifact.group{
+							None => panic!("Error of file {}: artifact.group and artifact.path have not been found!", list_filename[num_raw_data]),
+							Some(_) => ()
+						}
+					}
+					Some(_) => {
+						match &value.as_ref().unwrap().artifact.group{
+							None => (),
+							Some(_) => panic!("Error of file {}: artifact.group and artifact.path have been found, please select a choice element!", list_filename[num_raw_data])
+						}
+					}
+				}
+				let out = match value {
+					Ok(expr) => expr,
+					Err(e) => panic!("Error of file {}: {:?}", list_filename[num_raw_data],e.to_string()),
 				};
 				parse_file.push(out);
 			}

@@ -17,7 +17,17 @@ pub async fn try_filesystem(source: PathBuf, dest_file: &mut File) -> Result<(),
 	let mut contents = vec![];
 	file.read_to_end(&mut contents).await?;
 	dest_file.write_all(&contents).await?;
-	Ok(())
+	match dest_file.write_all(&contents).await {
+		Ok(_inf) => {
+			info!("{}",get_source_string);
+			Ok(())
+		},
+		Err(err) => {
+			error!("{}",err);
+			Err(err.into())
+		}
+	}
+	// Ok(())
 }
 
 pub async fn try_ntfs(source: PathBuf, dest_file: &mut File, vss_item: Option<VSSObj>) -> Result<(),>{
@@ -45,7 +55,6 @@ pub async fn try_ntfs(source: PathBuf, dest_file: &mut File, vss_item: Option<VS
 			Ok(())
 		},
 		Err(err) => {
-			println!("z {:?}", err);
 			error!("Impossible to extract file: {} ",&source.display());
 			Err(err)
 		},

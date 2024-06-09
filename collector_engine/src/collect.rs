@@ -85,8 +85,8 @@ impl Collect{
 							.to_str()
 							.unwrap()
 							.to_string();
-						let add_backslah = self.src.clone() + "\\";
-						to_entry = pathbuf_to_str.replace(&add_backslah,"").into();
+						let add_backslash = self.src.clone() + "\\";
+						to_entry = pathbuf_to_str.replace(&add_backslash,"").into();
 					}
 					match try_ntfs(to_entry,&mut output_file,item).await {
 						Ok(_) => {
