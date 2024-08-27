@@ -19,6 +19,22 @@ Or build in production mode:
 ```bash
 cargo build --release --bin collector_cli
 ```
+
+#### Build under Linux
+
+It's able to build rust project under linux to windows.
+To do that execute the following command 
+```bash
+apt-get install gcc-mingw-w64-x86-64 -y
+apt-get install gcc -y
+apt-get install build-essential -y
+rustup target add x86_64-pc-windows-gnu
+```
+after that you can build the project for example:
+```bash
+cargo build --target x86_64-pc-windows-gnu --bin collector_packer --release
+```
+
 ## Run collector
 
 The project is build to easy to run.
@@ -70,4 +86,3 @@ Options:
 ## 🖼️ Next project
 
 At the end of this project, I developping a GUI to interact easier with the binary.
-
